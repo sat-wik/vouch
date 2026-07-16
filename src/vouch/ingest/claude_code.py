@@ -103,6 +103,39 @@ def _task_hint(rec: dict, by_uuid: dict[str, dict]) -> tuple[str, str]:
     return "main:agentic-loop", root_text
 
 
+def reconstruct_messages(path: str, uuid: str) -> list[dict[str, str]]:
+    """Rebuild the text conversation leading up to one assistant call.
+
+    Walks the parentUuid chain root→call and renders each ancestor as a text
+    message. Tool blocks are dropped, so this is an *approximation* of the real
+    request — and the harness system prompt is absent entirely. Good enough to
+    put two candidate configs on equal footing (replay both), not good enough
+    to compare a replay against the production baseline directly.
+    """
+    recs = _load_lines(path)
+    by_uuid = {r["uuid"]: r for r in recs if "uuid" in r}
+    target = by_uuid.get(uuid)
+    if target is None:
+        return []
+    chain: list[dict] = []
+    seen: set[str] = set()
+    cur = target
+    while cur.get("parentUuid") and cur["parentUuid"] in by_uuid:
+        if cur.get("uuid") in seen:
+            break
+        seen.add(cur["uuid"])
+        cur = by_uuid[cur["parentUuid"]]
+        chain.append(cur)
+    messages: list[dict[str, str]] = []
+    for rec in reversed(chain):
+        if rec.get("type") not in ("user", "assistant"):
+            continue
+        text = _text_of(rec.get("message", {})).strip()
+        if text:
+            messages.append({"role": rec["type"], "content": text})
+    return messages
+
+
 def load_claude_code(base: str | None = None) -> list[LogRecord]:
     base = base or os.path.expanduser("~/.claude/projects")
     files = sorted(glob.glob(f"{base}/**/*.jsonl", recursive=True))
@@ -138,7 +171,12 @@ def load_claude_code(base: str | None = None) -> list[LogRecord]:
                     output_tokens=usage.get("output_tokens"),
                     task_hint=hint,
                     source="claude-code",
-                    meta={"project": project, "session": r.get("sessionId")},
+                    meta={
+                        "project": project,
+                        "session": r.get("sessionId"),
+                        "path": path,
+                        "uuid": r.get("uuid"),
+                    },
                 )
             )
     return records

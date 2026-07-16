@@ -24,6 +24,10 @@ class LogRecord:
     output_tokens: int | None = None
     task_hint: str | None = None  # harness-assigned task identity (Claude Code)
     source: str = ""
+    # Full text conversation [{role, content}] when the log carries it; used by
+    # replay. Adapters that can't afford to keep it inline (Claude Code) leave
+    # this None and expose a lazy reconstruction path via meta.
+    messages: list[dict[str, Any]] | None = None
     meta: dict[str, Any] = field(default_factory=dict)
 
     def est_input_tokens(self) -> int:
