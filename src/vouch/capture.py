@@ -1,5 +1,8 @@
 """Tollgate: the capture proxy (PRD §5). Observes; never redirects.
 
+Also maintained as a standalone tool at https://github.com/sat-wik/tollgate
+(PyPI: tollgate-proxy) — keep the two in sync until vouch depends on it.
+
 Point your app's base URL at http://localhost:4141 and Tollgate forwards
 /v1/chat/completions and /v1/responses to OpenAI and /v1/messages to
 Anthropic, streaming SSE through untouched while teeing every call to

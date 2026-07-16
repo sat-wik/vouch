@@ -35,6 +35,8 @@ pip install -e '.[capture]'
 vouch capture --port 4141
 ```
 
+Tollgate also ships standalone: [github.com/sat-wik/tollgate](https://github.com/sat-wik/tollgate).
+
 ## Judge design
 
 Verdicts come from blind pairwise judgment: tie-biased (breaks only on factual
