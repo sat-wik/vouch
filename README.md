@@ -4,9 +4,9 @@ A regression suite for your LLM calls that writes itself from production traffic
 Change a prompt or swap a model; Vouch replays your real workload clusters through
 both versions, blind-judges the outputs, and tells you what actually changed.
 
-**Status: Phase 1 (pre-release).** `vouch analyze` works; snapshot/diff/judge land
-in Phase 2. See [vouch-prd.md](vouch-prd.md) for the full plan and
-[phase0/RESULT.md](phase0/RESULT.md) for the validation-probe result.
+**Status: Phase 1 complete (pre-release).** `vouch analyze` works; snapshot/diff/judge
+land in Phase 2. See [vouch-prd.md](vouch-prd.md) for the full plan and the gate
+results in [phase0/RESULT.md](phase0/RESULT.md) and [phase1/RESULT.md](phase1/RESULT.md).
 
 ## Quick start
 
